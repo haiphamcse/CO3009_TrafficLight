@@ -19,7 +19,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "global.h"
+#include "timer.h"
+#include "button.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -89,7 +91,8 @@ int main(void)
   MX_TIM2_Init();
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim2);
+  setAllTimer(100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,7 +100,15 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  if(timer_flag[0] == 1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOB, D4_Pin);
+		  setTimer(100, 0);
+	  }
+	  if(isButtonPressed(0) == 1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOB, D5_Pin);
+	  }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -205,7 +216,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : A0_Pin A1_Pin A2_Pin */
   GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : A3_Pin D6_Pin D5_Pin D4_Pin */
