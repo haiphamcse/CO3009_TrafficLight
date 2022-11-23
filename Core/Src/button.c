@@ -58,7 +58,7 @@ void getKeyInput() //Thay Nhan version 1
 				if(KeyReg2[i] == PRESSED_STATE)
 				{
 					subKeyProcess(i);
-					TimeOutForKeyPress[i] = KEY_TIMED_OUT;
+					TimeOutForKeyPress[i] = TimeOutForKeyPress[i];
 				}
 			}
 			else
@@ -70,7 +70,7 @@ void getKeyInput() //Thay Nhan version 1
 						subKeyLongProcess(i); //USE THIS IF WANT TO USED LONG PRESSED FOR DIFFERENT BEHAVIOUR
 						subKeyProcess(i); //USE THIS IF WANT TO USED LONG PRESSED SAME AS SHORT PRESSED
 					}
-					TimeOutForKeyPress[i] = KEY_TIMED_OUT;
+					TimeOutForKeyPress[i] = TimeOutForKeyPress[i];
 				}
 			}
 		}

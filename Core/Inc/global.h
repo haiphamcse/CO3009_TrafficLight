@@ -20,7 +20,6 @@
  */
 #define NORMAL_STATE SET
 #define PRESSED_STATE RESET
-#define KEY_TIMED_OUT 100
 
 extern uint16_t button[BUTTON_COUNT];
 extern GPIO_TypeDef * button_gpio[BUTTON_COUNT];
