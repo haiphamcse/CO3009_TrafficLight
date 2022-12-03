@@ -1,0 +1,12 @@
+fsm.c:40:6:buffer_print	8	static
+fsm.c:53:6:clear_led	16	static
+fsm.c:60:6:blink_red	8	static
+fsm.c:69:6:blink_yellow	8	static
+fsm.c:80:6:blink_green	8	static
+fsm.c:91:6:auto_red	16	static
+fsm.c:102:6:auto_yellow	16	static
+fsm.c:113:6:auto_green	16	static
+fsm.c:125:6:fsm_clock_counter	8	static
+fsm.c:139:6:fsm_auto_traffic	8	static
+fsm.c:177:6:fsm_auto_traffic_1	8	static
+fsm.c:214:6:fsm_traffic	8	static
