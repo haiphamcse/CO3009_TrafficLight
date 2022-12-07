@@ -22,8 +22,8 @@
 #include "global.h"
 #include "fsm.h"
 #include "timer.h"
-#include "uart.h"
 #include "scheduler.h"
+#include "button.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -102,10 +102,11 @@ int main(void)
   setAllTimer(100);
   SCH_Init();
   SCH_Add(getKeyInput, 0, 1, 0);
-  SCH_Add(timerRun, 0, 10, 1);
-  SCH_Add(fsm_clock_counter, 0, 400, 2);
+  SCH_Add(timerRun, 0, 1, 1);
+  SCH_Add(fsm_clock_counter, 0, 1, 2);
   SCH_Add(fsm_traffic, 0, 1, 3);
-  SCH_Add(buffer_print, 0, 400, 4);
+  SCH_Add(buffer_print, 0, 100, 4);
+  SCH_Add(fsm_pedestrian, 0, 1, 5);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,31 +114,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  //	  blink_red();
-	  //	  if(isButtonPressed(0) == 1){
-	  //		  //RED
-	  //		  HAL_GPIO_WritePin(led_gpio[0], led[0], 1);
-	  //		  HAL_GPIO_WritePin(led_gpio[2], led[2], 0);
-	  //		  HAL_GPIO_WritePin(led_gpio[1], led[1], 0);
-	  //		  HAL_GPIO_WritePin(led_gpio[3], led[3], 1);
-	  //	  }
-	  //	  if(isButtonPressed(1) == 1){
-	  //		  //GREEN
-	  //		  HAL_GPIO_WritePin(led_gpio[0], led[0], 0);
-	  //		  HAL_GPIO_WritePin(led_gpio[2], led[2], 1);
-	  //		  HAL_GPIO_WritePin(led_gpio[1], led[1], 1);
-	  //		  HAL_GPIO_WritePin(led_gpio[3], led[3], 0);
-	  //	  }
-	  //	  if(isButtonPressed(2) == 1){
-	  //		  //YELLOW
-	  //		  HAL_GPIO_WritePin(led_gpio[0], led[0], 1);
-	  //		  HAL_GPIO_WritePin(led_gpio[2], led[2], 1);
-	  //		  HAL_GPIO_WritePin(led_gpio[1], led[1], 1);
-	  //		  HAL_GPIO_WritePin(led_gpio[3], led[3], 1);
-	  //	  }
-//	  	  fsm_clock_counter();
-//	  	  fsm_traffic();
-	  	  SCH_Dispatch();
+	  SCH_Dispatch();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -158,7 +135,9 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -167,12 +146,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -197,7 +176,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 7999;
+  htim2.Init.Prescaler = 63999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 9;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -270,13 +249,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(D2_GPIO_Port, D2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, D6_Pin|D3_Pin|D5_Pin|D4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, D3_Pin|D5_Pin|D4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, D7_Pin|D2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : A1_Pin A2_Pin */
-  GPIO_InitStruct.Pin = A1_Pin|A2_Pin;
+  /*Configure GPIO pins : A0_Pin A1_Pin A2_Pin */
+  GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -287,19 +266,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(A3_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : D2_Pin */
-  GPIO_InitStruct.Pin = D2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(D2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : D3_Pin D5_Pin D4_Pin */
-  GPIO_InitStruct.Pin = D3_Pin|D5_Pin|D4_Pin;
+  /*Configure GPIO pins : D6_Pin D3_Pin D5_Pin D4_Pin */
+  GPIO_InitStruct.Pin = D6_Pin|D3_Pin|D5_Pin|D4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : D7_Pin D2_Pin */
+  GPIO_InitStruct.Pin = D7_Pin|D2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
 

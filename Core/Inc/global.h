@@ -11,8 +11,8 @@
 /*
  * INIT PARAMETERS FOR SYSTEM
  */
-#define TIMER_COUNT 2
-#define BUTTON_COUNT 3
+#define TIMER_COUNT 3
+#define BUTTON_COUNT 4
 #define duration_LONGPRESS 300 //LONG_PRESS TIMED OUT
 
 /*
@@ -41,8 +41,8 @@ extern int timer_delay[TIMER_COUNT];
  * CONFIG LED PINS
  */
 
-extern uint16_t led[4];
-extern GPIO_TypeDef * led_gpio[4];
+extern uint16_t led[6];
+extern GPIO_TypeDef * led_gpio[6];
 
 /*
  * CONFIG UART

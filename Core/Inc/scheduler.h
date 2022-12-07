@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#define MAX_TASK 5
+#define MAX_TASK 7
 
 typedef struct{
 	//Delay, Period, Function, ID

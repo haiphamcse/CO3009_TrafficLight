@@ -16,4 +16,5 @@
 void fsm_traffic();
 void fsm_clock_counter();
 void buffer_print();
+void fsm_pedestrian();
 #endif /* INC_FSM_H_ */

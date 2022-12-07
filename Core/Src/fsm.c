@@ -16,6 +16,7 @@ int clock_counter = 3;
 int clock_counter_1 = 5;
 
 int manual_status = 0;
+int pedestrain_status = 3;
 
 int MAX_RED = 5;
 int MAX_YELLOW = 2;
@@ -35,6 +36,10 @@ char str[50];
  * led[0] = 0, led[1] = 1:
  * led[0] = 0, led[1] = 0:
  * led[0] = 1, led[1] = 1:
+ *
+ * led[4] = 0, led[5] = 1: GREEN
+ * led[4] = 1, led[5] = 1: YELLOW
+ * led[4] = 1, led[5] = 0: RED
  */
 
 void buffer_print()
@@ -282,6 +287,74 @@ void fsm_traffic(){
 			HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "!UPDATE_GREEN_ACK#\r\n"), 1000);
 			MAX_GREEN = BUFFER_GREEN;
 		}
+		break;
+	}
+}
+
+
+void pedestrain_led(int index)
+{
+	if(index == 3){
+		HAL_GPIO_WritePin(led_gpio[4], led[4], 0);
+		HAL_GPIO_WritePin(led_gpio[5], led[5], 0);
+	}
+	else if(index == 0){
+		HAL_GPIO_WritePin(led_gpio[4], led[4], 1);
+		HAL_GPIO_WritePin(led_gpio[5], led[5], 0);
+	}
+	else if(index == 1){
+		HAL_GPIO_WritePin(led_gpio[4], led[4], 1);
+		HAL_GPIO_WritePin(led_gpio[5], led[5], 1);
+	}
+	else if(index == 2){
+		HAL_GPIO_WritePin(led_gpio[4], led[4], 0);
+		HAL_GPIO_WritePin(led_gpio[5], led[5], 1);
+	}
+	else{}
+}
+
+//FSM FOR PEDESTRIAN - LINE 1
+void fsm_pedestrian(){
+	switch(pedestrain_status){
+	case 3:
+		//TURN OFF PEDESTRIAN
+		pedestrain_led(3);
+		if(isButtonPressed(3) == 1)
+		{
+			pedestrain_status = auto_status;
+			setTimer(timer_delay[2], 2);
+		}
+		break;
+	case 0:
+		//TOGGLE RED PEDESTRIAN
+		pedestrain_led(0);
+		if(auto_status != 0){
+			pedestrain_status = auto_status;
+			pedestrain_led(3);
+		}
+		if(isButtonPressed(3) == 1){setTimer(timer_delay[2], 2);}
+		if(timer_flag[2] == 1){pedestrain_status = 3;}
+		break;
+	case 1:
+		//TOGGLE YELLOW PEDESTRIAN
+		pedestrain_led(1);
+
+		if(auto_status != 1){
+			pedestrain_status = auto_status;
+			pedestrain_led(3);
+		}
+		if(isButtonPressed(3) == 1){setTimer(timer_delay[2], 2);}
+		if(timer_flag[2] == 1){pedestrain_status = 3;}
+		break;
+	case 2:
+		//TOGGLE GREEN PEDESTRIAN
+		pedestrain_led(2);
+		if(auto_status != 2){
+			pedestrain_status = auto_status;
+			pedestrain_led(3);
+		}
+		if(isButtonPressed(3) == 1){setTimer(timer_delay[2], 2);}
+		if(timer_flag[2] == 1){pedestrain_status = 3;}
 		break;
 	}
 }
