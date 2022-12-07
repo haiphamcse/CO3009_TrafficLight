@@ -19,11 +19,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "global.h"
-#include "fsm.h"
 #include "timer.h"
+#include "fsm.h"
+#include "global.h"
 #include "scheduler.h"
-#include "button.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -99,7 +98,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_UART_Receive_IT(&huart2, &temp, 1);
-  setAllTimer(100);
+
+  //ADD SCHEDULER TASK HERE
   SCH_Init();
   SCH_Add(getKeyInput, 0, 1, 0);
   SCH_Add(timerRun, 0, 1, 1);
@@ -107,6 +107,7 @@ int main(void)
   SCH_Add(fsm_traffic, 0, 1, 3);
   SCH_Add(buffer_print, 0, 100, 4);
   SCH_Add(fsm_pedestrian, 0, 1, 5);
+  setAllTimer(100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -176,9 +177,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 63999;
+  htim2.Init.Prescaler = 63;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 9;
+  htim2.Init.Period = 10000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)

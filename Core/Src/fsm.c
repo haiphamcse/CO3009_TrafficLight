@@ -338,6 +338,7 @@ void fsm_pedestrian(){
 	case 1:
 		//TOGGLE YELLOW PEDESTRIAN
 		pedestrain_led(1);
+		//ADD BUZZER CODE
 
 		if(auto_status != 1){
 			pedestrain_status = auto_status;
