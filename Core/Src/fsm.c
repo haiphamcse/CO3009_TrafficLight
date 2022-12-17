@@ -30,6 +30,8 @@ char str[50];
 /*
  * TIMER[0]: MAIN TRAFFIC COUNTER
  * TIMER[1]: BLINKING COUNTER
+ * TIMER[2]: PEDESTRIAN COUNTER
+ * TIMER[3]: PWM COUNTER
  *
  * led[0] = D2, led[1] = D3, led[2] = D5, led[3] = D4
  * led[0] = 1, led[1] = 0: YELLOW LINE 1
@@ -268,6 +270,7 @@ void fsm_traffic(){
 				MAX_RED = 5;
 				MAX_YELLOW = 2;
 				MAX_GREEN = 3;
+				HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "!REVERTING TO DEFAULT#\r\n"), 1000);
 			}
 			else{
 				HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "!UPDATE_GRANTED#\r\n"), 1000);
@@ -314,10 +317,16 @@ void pedestrain_led(int index)
 }
 
 //FSM FOR PEDESTRIAN - LINE 1
+int tim_frequency[2] = {40, 10};
+int tim_count = 0;
+int tim_volume = 300;
+int tim_max = 6000; //CHANGE THIS TO CHANGE VOLUME. RANGING FROM 0->9999
 void fsm_pedestrian(){
 	switch(pedestrain_status){
 	case 3:
 		//TURN OFF PEDESTRIAN
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+		tim_count = 0;
 		pedestrain_led(3);
 		if(isButtonPressed(3) == 1)
 		{
@@ -328,34 +337,57 @@ void fsm_pedestrian(){
 	case 0:
 		//TOGGLE RED PEDESTRIAN
 		pedestrain_led(0);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
 		if(auto_status != 0){
-			pedestrain_status = auto_status;
-			pedestrain_led(3);
+			pedestrain_status = auto_status; //IF LINE1 IS NOT GREEN
+			//pedestrain_led(3); //CLEAR LED BEFORE CHANGING STATE
 		}
 		if(isButtonPressed(3) == 1){setTimer(timer_delay[2], 2);}
 		if(timer_flag[2] == 1){pedestrain_status = 3;}
+		if(manual_status != 0){pedestrain_status = 3;}
 		break;
 	case 1:
 		//TOGGLE YELLOW PEDESTRIAN
-		pedestrain_led(1);
-		//ADD BUZZER CODE
-
+		pedestrain_led(0);
 		if(auto_status != 1){
 			pedestrain_status = auto_status;
 			pedestrain_led(3);
 		}
 		if(isButtonPressed(3) == 1){setTimer(timer_delay[2], 2);}
 		if(timer_flag[2] == 1){pedestrain_status = 3;}
+		if(manual_status != 0){pedestrain_status = 3;}
 		break;
 	case 2:
 		//TOGGLE GREEN PEDESTRIAN
-		pedestrain_led(2);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, tim_volume);
+		if(clock_counter >=MAX_GREEN)
+		{
+			pedestrain_led(2);
+			if(timer_flag[3] == 1)
+			{
+				tim_count++;
+				if(tim_count % 2 == 0) tim_volume = 0;
+				else tim_volume = tim_max;
+				setTimer(tim_frequency[0], 3);
+			}
+		}
+		else{
+			pedestrain_led(1); //TOGGLE YELLOW
+			if(timer_flag[3] == 1)
+			{
+				tim_count++;
+				if(tim_count % 2 == 0) tim_volume = 0;
+				else tim_volume = tim_max;
+				setTimer(tim_frequency[1], 3);
+			}
+		}
 		if(auto_status != 2){
 			pedestrain_status = auto_status;
 			pedestrain_led(3);
 		}
 		if(isButtonPressed(3) == 1){setTimer(timer_delay[2], 2);}
 		if(timer_flag[2] == 1){pedestrain_status = 3;}
+		if(manual_status != 0){pedestrain_status = 3;}
 		break;
 	}
 }

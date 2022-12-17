@@ -25,7 +25,7 @@ int button_long_flag[BUTTON_COUNT] = {0};
 
 int timer_counter[TIMER_COUNT] = {0};
 int timer_flag[TIMER_COUNT] = {0};
-int timer_delay[TIMER_COUNT] = {100, 25, 700};
+int timer_delay[TIMER_COUNT] = {100, 25, 700, 100};
 
 /*
  * CONFIG UART

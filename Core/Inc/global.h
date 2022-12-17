@@ -11,7 +11,7 @@
 /*
  * INIT PARAMETERS FOR SYSTEM
  */
-#define TIMER_COUNT 3
+#define TIMER_COUNT 4
 #define BUTTON_COUNT 4
 #define duration_LONGPRESS 300 //LONG_PRESS TIMED OUT
 
@@ -50,4 +50,8 @@ extern GPIO_TypeDef * led_gpio[6];
 extern UART_HandleTypeDef huart2;
 extern uint8_t temp;
 
+/*
+ * CONFIG BUZZER
+ */
+extern TIM_HandleTypeDef htim3;
 #endif /* INC_GLOBAL_H_ */
