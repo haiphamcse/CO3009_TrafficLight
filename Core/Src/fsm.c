@@ -317,7 +317,7 @@ void pedestrain_led(int index)
 }
 
 //FSM FOR PEDESTRIAN - LINE 1
-int tim_frequency[2] = {40, 10};
+int tim_frequency[2] = {40, 10}; //CHANGE FREQUENCY OF BUZZER
 int tim_count = 0;
 int tim_volume = 300;
 int tim_max = 6000; //CHANGE THIS TO CHANGE VOLUME. RANGING FROM 0->9999

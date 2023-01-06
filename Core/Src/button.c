@@ -68,7 +68,7 @@ void getKeyInput() //Thay Nhan version 1
 					if(KeyReg2[i] == PRESSED_STATE)
 					{
 						subKeyLongProcess(i); //USE THIS IF WANT TO USED LONG PRESSED FOR DIFFERENT BEHAVIOUR
-						subKeyProcess(i); //USE THIS IF WANT TO USED LONG PRESSED SAME AS SHORT PRESSED
+						//subKeyProcess(i); //USE THIS IF WANT TO USED LONG PRESSED SAME AS SHORT PRESSED
 					}
 					TimeOutForKeyPress[i] = TimeOutForKeyPress[i];
 				}
